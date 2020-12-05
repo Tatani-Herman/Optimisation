@@ -1,1 +1,1202 @@
+#include <stdio.h>
+#include <math.h>
 
+//TATANI HERMAN
+void permuter(float *a, float *b) {
+    float tmp;
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+void triRapid(float tab[], int first, int last) {
+    int pivot, i, j;
+    if(first < last) {
+        pivot = first;
+        i = first;
+        j = last;
+        while (i < j) {
+            while(tab[i] >= tab[pivot] && i < last)
+                i++;
+            while(tab[j] < tab[pivot])
+                j--;
+            if(i < j) {
+                permuter(&tab[i], &tab[j]);
+            }
+        }
+        permuter(&tab[pivot], &tab[j]);
+        triRapid(tab, first, j - 1);
+        triRapid(tab, j + 1, last);
+    }
+}
+int main()
+{
+    int i,j,k;
+     float l=0;
+    float Y[8];
+    float effet[8]={0,0,0,0,0,0,0,0};
+    float effettrie[8];
+    int opt[8];     //effet+yexp
+  int tab1[8][8]={{1,-1,-1,-1},
+                  {1,1,-1,-1},
+                  {1,-1,1,-1},
+                  {1,1,1,-1},
+                  {1,-1,-1,1},
+                  {1,1,-1,1},
+                  {1,-1,1,1},
+                  {1,1,1,1}};
+  //interaction X1X2
+  for(i=0;i<8;i++)
+      tab1[i][4]=tab1[i][1]*tab1[i][2];
+  //interaction X1X3
+  for(i=0;i<8;i++)
+      tab1[i][5]=tab1[i][1]*tab1[i][3];
+  //interaction X2X3
+  for(i=0;i<8;i++)
+      tab1[i][6]=tab1[i][2]*tab1[i][3];
+  //interaction X1X2X3
+  for(i=0;i<8;i++)
+      tab1[i][7]=tab1[i][1]*tab1[i][2]*tab1[i][3];
+
+//Affichage de la matrice
+  printf("============ Affichage de la matrice =================: \n");
+    printf("Moy  X1  X2  X3  X1X2  X1X3  X2X3  X1X2X3\n");
+      for(i=0;i<8;i++){
+          for(j=0;j<8;j++){
+              printf("%d",tab1[i][j]);
+              printf("    ");
+          }
+          printf("\n");
+      }
+
+//saisie des reponses Y par l'utilisateur
+      printf("\n");
+  printf("================= Entrer les 8 valeurs de Yexp ============= \n");
+  for(i=0;i<8;i++){
+      printf("Y[%d]= ",i);
+      scanf("%f",Y+i);
+      printf("\n");
+  }
+
+
+  //calcul des effet
+  for(i=0;i<8;i++)  //on fixe la colonne
+  {
+     for(j=0;j<8;j++)
+         effet[i]=effet[i]+Y[j]*tab1[j][i];
+     effet[i]=effet[i]/8;
+  }
+
+  //Affichage des effets
+  printf("\n");
+  printf("================= Les effets ============= \n");
+ for(i=0;i<8;i++)
+ {printf("%2.5f",effet[i]);
+     printf("  ");}
+ printf("\n");
+
+  //triage des effets par ordre decroissant de leur valeur absolue
+  for(i=0;i<8;i++){
+      effettrie[i]=fabs(effet[i]); //la fonction fabs de la bibiothèque math.h permet d'avoir la valeur absolue d'un réel
+      }
+  triRapid(effettrie,1,7);
+
+
+  //Calcul de l'optimum
+  opt[0]=1;  //optimum de la moyenne
+  if(effettrie[2]==fabs(effet[7])){
+      effettrie[2]=effettrie[3];
+      effettrie[3]=effettrie[4];
+  }
+  if(effettrie[3]==fabs(effet[7])){
+      effettrie[3]=effettrie[4];
+      effettrie[4]=effettrie[5];
+  }
+if(effettrie[2]==fabs(effet[4])){
+    if(effet[4]<0 && effettrie[1]==fabs(effet[1]) && effet[1]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=-1;
+        opt[2]=1;
+        opt[4]=-1;
+    }
+    else if(effet[4]<0 && effettrie[1]==fabs(effet[1]) && effet[1]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=1;
+        opt[2]=-1;
+        opt[4]=-1;
+    }
+   else if(effet[4]>0 && effettrie[1]==fabs(effet[1]) && effet[1]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=-1;
+        opt[2]=-1;
+        opt[4]=1;
+    }
+    else if(effet[4]>0 && effettrie[1]==fabs(effet[1]) && effet[1]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=1;
+        opt[2]=1;
+        opt[4]=1;
+    }
+
+    else if(effet[4]<0 && effettrie[1]==fabs(effet[2]) && effet[2]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=-1;
+        opt[1]=1;
+        opt[4]=-1;
+    }
+    else if(effet[4]<0 && effettrie[1]==fabs(effet[2]) && effet[2]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=1;
+        opt[1]=-1;
+        opt[4]=-1;
+    }
+    else if(effet[4]>0 && effettrie[1]==fabs(effet[2]) && effet[2]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=-1;
+        opt[1]=-1;
+        opt[4]=1;
+    }
+    else if(effet[4]>0 && effettrie[1]==fabs(effet[2]) && effet[2]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=1;
+        opt[1]=1;
+        opt[4]=1;
+    }
+        else if(effet[4]<0 && effettrie[1]==fabs(effet[3]) && effet[3]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+            opt[3]=-1;
+            opt[1]=0;     //cas X1X2 et X3; ce n'est pas possible
+            opt[4]=-1;
+        }
+    else { //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=1;
+        opt[1]=0;     //cas X1X2 et X3; ce n'est pas possible
+        opt[4]=-1;
+    }
+
+    }
+else if(effettrie[2]==fabs(effet[5])){
+    if(effet[5]<0 && effettrie[1]==fabs(effet[1]) && effet[1]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=-1;
+        opt[3]=1;
+        opt[5]=-1;
+    }
+   else if(effet[5]<0 && effettrie[1]==fabs(effet[1]) && effet[1]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=1;
+        opt[3]=-1;
+        opt[5]=-1;
+    }
+    else if(effet[5]>0 && effettrie[1]==fabs(effet[1]) && effet[1]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=-1;
+        opt[3]=-1;
+        opt[5]=1;
+    }
+    else if(effet[5]>0 && effettrie[1]==fabs(effet[1]) && effet[1]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[1]=1;
+        opt[3]=1;
+        opt[5]=1;
+    }
+
+    else if(effet[5]<0 && effettrie[1]==fabs(effet[3]) && effet[3]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=-1;
+        opt[1]=1;
+        opt[5]=-1;
+    }
+    else if(effet[5]<0 && effettrie[1]==fabs(effet[3]) && effet[3]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=1;
+        opt[1]=-1;
+        opt[5]=-1;
+    }
+    else if(effet[5]>0 && effettrie[1]==fabs(effet[3]) && effet[3]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=-1;
+        opt[1]=-1;
+        opt[5]=1;
+    }
+    else if(effet[5]>0 && effettrie[1]==fabs(effet[3]) && effet[3]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=1;
+        opt[1]=1;
+        opt[5]=1;
+    }
+     else if(effet[5]<0 && effettrie[1]==fabs(effet[2]) && effet[2]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+            opt[2]=-1;
+            opt[1]=0;     //cas X1X3 et X2; ce n'est pas possible
+            opt[5]=-1;
+        }
+    else { //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=1;
+        opt[1]=0;     //cas X1X3 et X2; ce n'est pas possible
+        opt[5]=-1;
+    }
+}
+
+else if(effettrie[2]==fabs(effet[6])){
+    if(effet[6]<0 && effettrie[1]==fabs(effet[2]) && effet[2]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=-1;
+        opt[3]=1;
+        opt[6]=-1;
+    }
+   else if(effet[6]<0 && effettrie[1]==fabs(effet[2]) && effet[2]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=1;
+        opt[3]=-1;
+        opt[6]=-1;
+    }
+    else if(effet[6]>0 && effettrie[1]==fabs(effet[2]) && effet[2]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=-1;
+        opt[3]=-1;
+        opt[6]=1;
+    }
+    else if(effet[6]>0 && effettrie[1]==fabs(effet[2]) && effet[2]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=1;
+        opt[3]=1;
+        opt[6]=1;
+    }
+
+    else if(effet[6]<0 && effettrie[1]==fabs(effet[3]) && effet[3]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=-1;
+        opt[2]=1;
+        opt[6]=-1;
+    }
+    else if(effet[6]<0 && effettrie[1]==fabs(effet[3]) && effet[3]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=1;
+        opt[1]=-1;
+        opt[5]=-1;
+    }
+    else if(effet[5]>0 && effettrie[1]==fabs(effet[3]) && effet[3]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=-1;
+        opt[2]=-1;
+        opt[6]=1;
+    }
+    else if(effet[6]>0 && effettrie[1]==fabs(effet[3]) && effet[3]>0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[3]=1;
+        opt[2]=1;
+        opt[6]=1;
+    }
+     else if(effet[6]<0 && effettrie[1]==fabs(effet[1]) && effet[1]<0){ //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+            opt[1]=-1;
+            opt[2]=0;     //cas X2X3 et X1; ce n'est pas possible
+            opt[6]=-1;
+        }
+    else { //effetrie[1] peut avoir 3 valeurs effet[0,1,2]
+        opt[2]=1;
+        opt[1]=0;     //cas X1X3 et X2; ce n'est pas possible
+        opt[5]=-1;
+    }
+}
+
+if(effettrie[1]==fabs(effet[1])){
+  if(effettrie[2]==fabs(effet[2])){
+      if(effettrie[3]==fabs(effet[3])){
+          if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[3]<0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[3]>0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+      }
+      else if(effettrie[3]==fabs(effet[4])){
+          if(effettrie[4]==fabs(effet[5])){
+            if(effet[1]<0 && effet[2]<0 && effet[5]<0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]<0 && effet[5]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[5]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[5]>0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[5]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[5]>0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]>0 && effet[5]<0){
+                opt[1]=1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]>0 && effet[5]>0){
+                opt[1]=1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+          }
+        }
+    else if(effettrie[3]==fabs(effet[5])){
+          if(effet[1]<0 && effet[2]<0 && effet[5]<0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]<0 && effet[2]<0 && effet[5]>0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[5]<0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[5]>0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[5]<0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[5]>0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[5]<0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[5]>0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+      }
+     else if(effettrie[3]==fabs(effet[6])){
+          if(effet[1]<0 && effet[2]<0 && effet[6]<0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]<0 && effet[2]<0 && effet[6]>0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[6]<0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[6]>0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[6]<0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[6]>0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[6]<0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[6]>0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+      }
+  }
+ else if(effettrie[2]==fabs(effet[3])){
+      if(effettrie[3]==fabs(effet[2])){
+          if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+              opt[1]=-1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+              opt[1]=-1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+              opt[1]=1;
+               opt[2]=-1;
+               opt[3]=1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[3]<0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=-1;
+          }
+          else if(effet[1]>0 && effet[2]>0 && effet[3]>0){
+              opt[1]=1;
+               opt[2]=1;
+               opt[3]=1;
+          }
+      }
+       else if(effettrie[3]==fabs(effet[5])){
+              if(effettrie[4]==fabs(effet[4])){
+              if(effet[1]<0 && effet[4]<0 && effet[3]<0){
+                  opt[1]=-1;
+                   opt[2]=1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]<0 && effet[4]<0 && effet[3]>0){
+                  opt[1]=-1;
+                   opt[2]=1;
+                   opt[3]=1;
+              }
+              else if(effet[1]<0 && effet[4]>0 && effet[3]<0){
+                  opt[1]=-1;
+                   opt[2]=-1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]<0 && effet[4]>0 && effet[3]>0){
+                  opt[1]=-1;
+                   opt[2]=-1;
+                   opt[3]=1;
+              }
+              else if(effet[1]>0 && effet[4]<0 && effet[3]<0){
+                  opt[1]=1;
+                   opt[2]=-1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]>0 && effet[4]<0 && effet[3]>0){
+                  opt[1]=1;
+                   opt[2]=-1;
+                   opt[3]=1;
+              }
+              else if(effet[1]>0 && effet[4]>0 && effet[3]<0){
+                  opt[1]=1;
+                   opt[2]=1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]>0 && effet[4]>0 && effet[3]>0){
+                  opt[1]=1;
+                   opt[2]=1;
+                   opt[3]=1;
+              }
+              }
+      }
+      else if(effettrie[3]==fabs(effet[4])){
+
+             if(effet[1]<0 && effet[4]<0 && effet[3]<0){
+                 opt[1]=-1;
+                  opt[2]=1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]<0 && effet[4]<0 && effet[3]>0){
+                 opt[1]=-1;
+                  opt[2]=1;
+                  opt[3]=1;
+             }
+             else if(effet[1]<0 && effet[4]>0 && effet[3]<0){
+                 opt[1]=-1;
+                  opt[2]=-1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]<0 && effet[4]>0 && effet[3]>0){
+                 opt[1]=-1;
+                  opt[2]=-1;
+                  opt[3]=1;
+             }
+             else if(effet[1]>0 && effet[4]<0 && effet[3]<0){
+                 opt[1]=1;
+                  opt[2]=-1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]>0 && effet[4]<0 && effet[3]>0){
+                 opt[1]=1;
+                  opt[2]=-1;
+                  opt[3]=1;
+             }
+             else if(effet[1]>0 && effet[4]>0 && effet[3]<0){
+                 opt[1]=1;
+                  opt[2]=1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]>0 && effet[4]>0 && effet[3]>0){
+                 opt[1]=1;
+                  opt[2]=1;
+                  opt[3]=1;
+             }
+
+     }
+          else if(effettrie[3]==fabs(effet[5])){
+                 if(effettrie[4]==fabs(effet[6])){
+                 if(effet[1]<0 && effet[6]<0 && effet[3]<0){
+                     opt[1]=-1;
+                      opt[2]=1;
+                      opt[3]=-1;
+                 }
+                 else if(effet[1]<0 && effet[6]<0 && effet[3]>0){
+                     opt[1]=-1;
+                      opt[2]=-1;
+                      opt[3]=1;
+                 }
+                 else if(effet[1]<0 && effet[6]>0 && effet[3]<0){
+                     opt[1]=-1;
+                      opt[2]=-1;
+                      opt[3]=-1;
+                 }
+                 else if(effet[1]<0 && effet[6]>0 && effet[3]>0){
+                     opt[1]=-1;
+                      opt[2]=1;
+                      opt[3]=1;
+                 }
+                 else if(effet[1]>0 && effet[6]<0 && effet[3]<0){
+                     opt[1]=1;
+                      opt[2]=1;
+                      opt[3]=-1;
+                 }
+                 else if(effet[1]>0 && effet[6]<0 && effet[3]>0){
+                     opt[1]=1;
+                      opt[2]=-1;
+                      opt[3]=1;
+                 }
+                 else if(effet[1]>0 && effet[6]>0 && effet[3]<0){
+                     opt[1]=1;
+                      opt[2]=-1;
+                      opt[3]=-1;
+                 }
+                 else if(effet[1]>0 && effet[6]>0 && effet[3]>0){
+                     opt[1]=1;
+                      opt[2]=1;
+                      opt[3]=1;
+                 }
+                 }
+         }
+      else  if(effet[1]<0  && effet[3]<0){
+          opt[1]=-1;
+           opt[3]=-1;
+
+      }
+      else if(effet[1]<0  && effet[3]>0){
+          opt[1]=-1;
+           opt[3]=1;
+      }
+      else if(effet[1]>0 && effet[3]<0){
+          opt[1]=1;
+           opt[3]=-1;
+      }
+      else if(effet[1]>0 && effet[3]>0){
+          opt[1]=1;
+           opt[3]=1;
+      }
+
+  }
+/*else if(effettrie[2]==fabs(effet[7])){
+      if(effettrie[3]==fabs(effet[3])){
+          if(effettrie[4]==fabs(effet[2])){
+              if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+                  opt[1]=-1;
+                   opt[2]=-1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+                  opt[1]=-1;
+                   opt[2]=-1;
+                   opt[3]=1;
+              }
+              else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+                  opt[1]=-1;
+                   opt[2]=1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+                  opt[1]=-1;
+                   opt[2]=1;
+                   opt[3]=1;
+              }
+              else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+                  opt[1]=1;
+                   opt[2]=-1;
+                   opt[3]=-1;
+              }
+              else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+                  opt[1]=1;
+                   opt[2]=-1;
+                   opt[3]=1;
+              }
+          }
+      else if(effettrie[4]==fabs(effet[4])){
+              if(effet[3]<0 && effet[1]<0 && effet[4]<0){
+                  opt[3]=-1;
+                   opt[2]=1;
+                   opt[1]=1;
+              }
+              else if(effet[3]<0 && effet[1]<0 && effet[4]>0){
+                  opt[3]=-1;
+                   opt[2]=-1;
+                   opt[1]=-1;
+              }
+              else if(effet[3]<0 && effet[1]>0 && effet[4]<0){
+                  opt[3]=-1;
+                   opt[2]=-1;
+                   opt[1]=-1;
+              }
+              else if(effet[3]<0 && effet[1]>0 && effet[4]>0){
+                  opt[3]=-1;
+                   opt[2]=1;
+                   opt[1]=1;
+              }
+              else if(effet[3]>0 && effet[1]<0 && effet[4]<0){
+                  opt[3]=1;
+                   opt[2]=1;
+                   opt[1]=1;
+              }
+              else if(effet[3]>0 && effet[1]<0 && effet[4]>0){
+                  opt[3]=1;
+                   opt[2]=-1;
+                   opt[1]=-1;
+      }
+  }
+      }
+  }*/
+
+}
+else if(effettrie[1]==fabs(effet[2])){
+    if(effettrie[2]==fabs(effet[1])){
+        if(effettrie[3]==fabs(effet[3])){
+            if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+        }
+        else if(effettrie[3]==fabs(effet[5])){
+            if(effet[1]<0 && effet[2]<0 && effet[5]<0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]<0 && effet[5]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[5]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[5]>0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[5]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[5]>0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]>0 && effet[5]<0){
+                opt[1]=1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]>0 && effet[5]>0){
+                opt[1]=1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+
+        }
+        else if(effettrie[3]==fabs(effet[6])){
+             if(effet[1]<0 && effet[2]<0 && effet[6]<0){
+                 opt[1]=-1;
+                  opt[2]=-1;
+                  opt[3]=1;
+             }
+             else if(effet[1]<0 && effet[2]<0 && effet[6]>0){
+                 opt[1]=-1;
+                  opt[2]=-1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]<0 && effet[2]>0 && effet[6]<0){
+                 opt[1]=-1;
+                  opt[2]=1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]<0 && effet[2]>0 && effet[6]>0){
+                 opt[1]=-1;
+                  opt[2]=1;
+                  opt[3]=1;
+             }
+             else if(effet[1]>0 && effet[2]<0 && effet[6]<0){
+                 opt[1]=1;
+                  opt[2]=-1;
+                  opt[3]=1;
+             }
+             else if(effet[1]>0 && effet[2]<0 && effet[6]>0){
+                 opt[1]=1;
+                  opt[2]=-1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]>0 && effet[2]>0 && effet[6]<0){
+                 opt[1]=1;
+                  opt[2]=1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]>0 && effet[2]>0 && effet[6]>0){
+                 opt[1]=1;
+                  opt[2]=1;
+                  opt[3]=1;
+             }
+        }
+    }
+  else if(effettrie[2]==fabs(effet[3])){
+        if(effettrie[3]==fabs(effet[1])){
+            if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+        }
+    else if(effettrie[3]==fabs(effet[4])){
+            if(effet[3]<0 && effet[2]<0 && effet[4]<0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]<0 && effet[2]<0 && effet[4]>0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[4]<0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[4]>0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[4]<0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[4]>0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+    }
+}
+        else if(effettrie[3]==fabs(effet[5])){
+            if(effet[3]<0 && effet[2]<0 && effet[5]<0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]<0 && effet[2]<0 && effet[5]>0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[5]<0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[5]>0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[5]<0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[5]>0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]>0 && effet[2]>0 && effet[5]<0){
+                opt[3]=1;
+                 opt[2]=1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]>0 && effet[2]>0 && effet[5]>0){
+                opt[3]=1;
+                 opt[2]=1;
+                 opt[1]=1;
+            }
+
+        }
+}
+}
+else if(effettrie[1]==fabs(effet[3])){
+    if(effettrie[2]==fabs(effet[1])){
+        if(effettrie[3]==fabs(effet[2])){
+            if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+        }
+        else if(effettrie[3]==fabs(effet[4])){
+            if(effet[1]<0 && effet[3]<0 && effet[4]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[3]<0 && effet[4]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[3]>0 && effet[4]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[3]>0 && effet[4]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[3]<0 && effet[4]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[3]<0 && effet[4]>0){
+                opt[1]=1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[3]>0 && effet[4]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[3]>0 && effet[4]>0){
+                opt[1]=1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+
+        }
+        else if(effettrie[3]==fabs(effet[6])){
+             if(effet[1]<0 && effet[3]<0 && effet[6]<0){
+                 opt[1]=-1;
+                  opt[2]=1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]<0 && effet[3]<0 && effet[6]>0){
+                 opt[1]=-1;
+                  opt[2]=-1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]<0 && effet[3]>0 && effet[6]<0){
+                 opt[1]=-1;
+                  opt[2]=-1;
+                  opt[3]=1;
+             }
+             else if(effet[1]<0 && effet[3]>0 && effet[6]>0){
+                 opt[1]=-1;
+                  opt[2]=1;
+                  opt[3]=1;
+             }
+             else if(effet[1]>0 && effet[3]<0 && effet[6]<0){
+                 opt[1]=1;
+                  opt[2]=1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]>0 && effet[3]<0 && effet[6]>0){
+                 opt[1]=1;
+                  opt[2]=-1;
+                  opt[3]=-1;
+             }
+             else if(effet[1]>0 && effet[3]>0 && effet[6]<0){
+                 opt[1]=1;
+                  opt[2]=-1;
+                  opt[3]=1;
+             }
+             else if(effet[1]>0 && effet[3]>0 && effet[6]>0){
+                 opt[1]=1;
+                  opt[2]=1;
+                  opt[3]=1;
+             }
+        }
+    }
+  else if(effettrie[2]==fabs(effet[2])){
+        if(effettrie[3]==fabs(effet[1])){
+            if(effet[1]<0 && effet[2]<0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]<0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]<0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]<0 && effet[2]>0 && effet[3]>0){
+                opt[1]=-1;
+                 opt[2]=1;
+                 opt[3]=1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]<0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=-1;
+            }
+            else if(effet[1]>0 && effet[2]<0 && effet[3]>0){
+                opt[1]=1;
+                 opt[2]=-1;
+                 opt[3]=1;
+            }
+        }
+    else if(effettrie[3]==fabs(effet[4])){
+            if(effet[3]<0 && effet[2]<0 && effet[4]<0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]<0 && effet[2]<0 && effet[4]>0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[4]<0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[4]>0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[4]<0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[4]>0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+    }
+}
+        else if(effettrie[3]==fabs(effet[5])){
+            if(effet[3]<0 && effet[2]<0 && effet[5]<0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]<0 && effet[2]<0 && effet[5]>0){
+                opt[3]=-1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[5]<0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=1;
+            }
+            else if(effet[3]<0 && effet[2]>0 && effet[5]>0){
+                opt[3]=-1;
+                 opt[2]=1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[5]<0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]>0 && effet[2]<0 && effet[5]>0){
+                opt[3]=1;
+                 opt[2]=-1;
+                 opt[1]=1;
+            }
+            else if(effet[3]>0 && effet[2]>0 && effet[5]<0){
+                opt[3]=1;
+                 opt[2]=1;
+                 opt[1]=-1;
+            }
+            else if(effet[3]>0 && effet[2]>0 && effet[5]>0){
+                opt[3]=1;
+                 opt[2]=1;
+                 opt[1]=1;
+            }
+
+        }
+}
+}
+else
+{
+    for(i=1;i<=3;i++)
+        if(opt[i]==0){
+        if(effet[i]<0)
+            opt[i]=-1;
+        else
+            opt[i]=1;
+}
+}
+opt[4]=opt[1]*opt[2];
+opt[5]=opt[1]*opt[3];
+opt[6]=opt[2]*opt[3];
+opt[7]=opt[1]*opt[2]*opt[3];
+
+for(i=0;i<8;i++)
+       l=l+effet[i]*opt[i];
+
+ printf("\n");
+printf("=============== Optimum =================\n");
+for(k=0;k<8;k++){
+    printf("%d",opt[k]);
+    printf("   ");
+}
+printf(" avec Y= %2.2f",l);
+    printf("\n");
+    return 0;
+}
+//TATANI HERMAN
