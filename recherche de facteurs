@@ -1,0 +1,46 @@
+int main()
+{
+    float x1,x2,x3;
+     float y1,y2;
+     float pas;
+     float effet0,effet1,effet2,effet3;
+
+     printf("Entrez l'intervalle [y1,y2] des valeurs de Y: \n");
+     printf("y1= ");
+     scanf("%f",&y1);
+     printf("\n");
+     printf("y2= ");
+     scanf("%f",&y2);
+     printf("\n");
+     printf("Entrez le pas d'incrementation des facteurs: \n");
+     printf("pas= ");
+     scanf("%f",&pas);
+     printf("\n");
+     printf("Entrez l'effet de la moyenne: ");
+     printf(" effet0= ");
+     scanf("%f",&effet0);
+     printf("\n");
+     printf("Entrez l'effet du facteur X1: ");
+     printf(" effet1= ");
+     scanf("%f",&effet1);
+     printf("\n");
+     printf("Entrez l'effet du facteur X2: ");
+     printf(" effet2= ");
+     scanf("%f",&effet2);
+     printf("\n");
+     printf("Entrez l'effet du facteur X3: ");
+     printf(" effet3= ");
+     scanf("%f",&effet3);
+     printf("\n");
+
+    for(x1=-1;x1<=1;x1=x1+pas)
+        for(x2=-1;x2<=1;x2=x2+pas)
+            for(x3=-1;x3<=1;x3=x3+pas)
+                if(effet0+effet1*x1+effet2*x2+effet3*x3>y1 && effet0+effet1*x1+effet2*x2+effet3*x3<y2){
+                    printf(" x1=%2.2f ",x1);
+                    printf(" x2=%2.2f ",x2);
+                    printf(" x3=%2.2f ",x3);
+                    printf("\n");
+                }
+    return 0;
+}
